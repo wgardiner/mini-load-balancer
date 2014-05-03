@@ -116,6 +116,40 @@ main = scotty 4000 $ do
         return ()
 ```
 
+### HAProxy Configuration
+
+```apache
+global
+    maxconn 256
+    nbproc 1
+    log 127.0.0.1 local0
+
+defaults
+    mode http
+    option httplog
+    log global
+    contimeout 5000
+    clitimeout 50000
+    srvtimeout 50000
+
+frontend unsecured *:2000
+    timeout client 5000
+    mode http
+    option httpclose
+    option forwardfor #forward's clients IP to app
+    default_backend www_backend
+
+backend www_backend
+    mode http
+    option forwardfor #this sets X-Forwarded-For
+    timeout server 30000
+    timeout connect 4000
+    server s0 localhost:2050 weight 1 maxconn 32 check
+    server s1 localhost:2051 weight 1 maxconn 32 check
+    server s2 localhost:2052 weight 1 maxconn 32 check
+    server s3 localhost:2053 weight 1 maxconn 32 check
+```
+
 The Haskell implementation outputs the tetration result to the console, and just outputs "Tetration is output to console :/" to the html page.
 
 
