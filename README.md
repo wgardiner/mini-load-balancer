@@ -65,7 +65,7 @@ app.get('/tetra/:x', function(req, res){
 
 ### Go net-http
 
-```golang
+```go
 package main
 
 import (
@@ -128,10 +128,10 @@ All testing was performed on a laptop with an Intel Core 2 Duo P8800 CPU @ 2.66 
 
 | x   | Ruby | Python | Node.js | GoLang | Haskell |
 | --- | ---- | ------ | ------- | ------ | ------- |
-| 140 | 51   | 31     | 28      | 90/4   | 
-| 1e4 | 256  | 6050   | 26      | NA     |
+| 140 | 51   | 31     | 28      | 90 / 4 | 225 / 5 |
+| 1e6 | 256  | 6050   | 26      | NA     | 229 / 7 |
 
-Note :  GoLang was not used for x=10000. The two values for x=140 are the times for `go run test.go` (compile and run code) and `./test` (run precompiled code)
+Note :  GoLang was not used for x=1e6. The two values for x=140 are the times for `go run test.go` (compile and run code) and `./test` (run precompiled code)
 
 #### Ruby
 - Computation: 
@@ -162,10 +162,6 @@ Note :  GoLang was not used for x=10000. The two values for x=140 are the times 
 - Computation: 
     - `python -c "140**140"  0.03s user 0.00s system 95% cpu 0.031 total`
     - `python -c "1000000**1000000"  6.05s user 0.03s system 99% cpu 6.097 total`
-- Performance:
-    - 4 Instances, running 100 users, 100 requests each, tetra 1e4
-    -
-
 
 #### Node.js
 - Computation: 
@@ -176,7 +172,7 @@ Note :  GoLang was not used for x=10000. The two values for x=140 are the times 
 - Computation: `go run test.go  0.05s user 0.03s system 92% cpu 0.090 total`
 
 Testing code:
-```golang
+```go
 package main
 import("math")
 func main() {
@@ -202,11 +198,11 @@ main = do
 ### Single Instance Results
 Transactions per second for accessing: web root / tetra 140 /tetra 10000. Testing run using `siege` with 100 concurrent users, 100 requests each, and the benchmark flag set. 
 
-| Request  | Ruby/Sinatra | Python/Flask | Node.js/Express | GoLang/net-http | Haskell/Scotty |
-| -------- | ------------ | ------------ | --------------- | --------------- | -------------- |
-| /        | 890          | 932          | 2496            | 4651 / 9346     | 8929           |
-| /t/140   | 835          | 911          | 2386            | 4464 / 9346     | 7812 *         |
-| /t/10000 | 203          | 18           | 2320            | NA              | 618 *          |
+| Request    | Ruby/Sinatra | Python/Flask | Node.js/Express | GoLang/net-http | Haskell/Scotty |
+| ---------- | ------------ | ------------ | --------------- | --------------- | -------------- |
+| `/`        | 890          | 932          | 2496            | 4651 / 9346     | 8929           |
+| `/t/140`   | 835          | 911          | 2386            | 4464 / 9346     | 7812 *         |
+| `/t/10000` | 203          | 18           | 2320            | NA              | 618 *          |
 
 
 Notes:
@@ -218,11 +214,11 @@ Notes:
 
 Transactions per second for accessing: web root / tetra 140 /tetra 10000. Testing run using `siege` with 100 concurrent users, 100 requests each, and the benchmark flag set. 
 
-| Request  | Ruby/Sinatra | Python/Flask | Node.js/Express | GoLang/net-http | Haskell/Scotty |
-| -------- | ------------ | ------------ | --------------- | --------------- | -------------- |
-| /        | 1072         | 1012         | 2160            | 3278 / 5291     | 3058 / 5556    |
-| /t/140   | 1019         | 968          | 2128            | 3164 / 5050     | NA             |
-| /t/10000 | 298          | 28           | 2137            | NA              | NA             |
+| Request    | Ruby/Sinatra | Python/Flask | Node.js/Express | GoLang/net-http | Haskell/Scotty |
+| ---------- | ------------ | ------------ | --------------- | --------------- | -------------- |
+| `/`        | 1072         | 1012         | 2160            | 3278 / 5291     | 3058 / 5556    |
+| `/t/140`   | 1019         | 968          | 2128            | 3164 / 5050     | NA             |
+| `/t/10000` | 298          | 28           | 2137            | NA              | NA             |
 
 Notes: 
 - The two values ("x / y") in each of the GoLang and Haskell cells represent the non-compiled / compiled values, respectively.
@@ -234,3 +230,4 @@ Notes:
 - Python performed very poorly at large integer operations, i.e. tetra 10000.
 - As might be expected, the compiled languages (i.e. Go and Haskell) performed superiorly to the interpretted languages.
 - These implementations parallelized poorly on the machine used for testing. The Ruby and Python implementations showed marginal improvement (~10%) with 4 instance parallelization, but the Node.js marginally decreased performance (~10%), and the performance significantly decreased (~40%) in Go and Haskell. Perhaps having implemented the 4 servers in single Go and Haskell programs rather than 4 individual programs would have increased their parallel performance. 
+- The Ruby implementation has the cleanest syntax. The Node.js program was easy to implement and performed relatively well, making it the "winner" in my eyes.
